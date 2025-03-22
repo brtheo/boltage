@@ -2,9 +2,11 @@ import { LightningElement, api } from 'lwc';
 import inputTemplate from './boltInput.html';
 import comboboxTemplate from './boltCombobox.html';
 import radioGroupTemplate from './boltRadioGroup.html';
+import recordPickerTemplate from './boltRecordPicker.html';
+const For = delay => new Promise(() => setTimeout(() => {}, delay));
 
 /**
- * @typedef {String} ObjectApiName 
+ * @typedef {String} ObjectApiName
  * @typedef {{[key:String]:any}} FieldValue
  * @typedef BoltBindEventDetail
  * @prop {'edit' | 'insert'} mode
@@ -13,8 +15,8 @@ import radioGroupTemplate from './boltRadioGroup.html';
 
 export default class BoltInput extends LightningElement {
   /**BOLT PROPS */
-  /** @type {'insert' | 'edit'} */ @api mode  = 'edit'; 
-  /** @type {'combobox' | 'radio'} */ @api shape  = 'combobox'; 
+  /** @type {'insert' | 'edit'} */ @api mode  = 'edit';
+  /** @type {'combobox' | 'radio'} */ @api shape  = 'combobox';
   /**SPREADED PROPS */
   @api info;
   @api ref;
@@ -27,6 +29,11 @@ export default class BoltInput extends LightningElement {
   @api type;
   @api options;
 
+  get RecordPickerObjectApiName() {
+    return this.recordPickerObjectApiName !== undefined
+      ? this.recordPickerObjectApiName
+      : this.fieldApiName;
+  }
   get currentValue() {
     return {
       'insert': 'ref',
@@ -34,25 +41,32 @@ export default class BoltInput extends LightningElement {
     }[this.mode];
   }
   get initialValue() { return this[this.currentValue]; }
+
   connectedCallback() {
     this.setAttribute('field', this.Name);
     this.classList.add(this.Name);
   }
   render() {
-    return {
-      'picklist': {
-        'combobox': comboboxTemplate, 
-        'radio': radioGroupTemplate
-      }[this.shape],
-    }[this.Type] ?? inputTemplate;
+    switch(this.Type) {
+      case 'reference':
+        return recordPickerTemplate;
+      case 'picklist':
+        return {
+          'combobox': comboboxTemplate,
+          'radio': radioGroupTemplate
+        }[this.shape];
+      default: return inputTemplate;
+    }
   }
-  bind(e) { 
-    this[this.currentValue] = e.detail.value;
+  bind(e) {
+    this[this.currentValue] = this.Type === 'reference'
+      ? e.detail.recordId
+      : e.detail.value;
     /**@type {BoltBindEventDetail} */
     const detail = {
       mode: this.mode,
       recordField: [
-        this.objectApiName, 
+        this.objectApiName,
         { [this.fieldApiName]: this[this.currentValue] },
       ]
     };
@@ -140,4 +154,7 @@ export default class BoltInput extends LightningElement {
   /**COMBOBOX ATTRIBUTES */
   @api dropdownAlignment;
   @api spinnerActive;
+
+  /**RECORD PICKER ATTR */
+  @api recordPickerObjectApiName
 }

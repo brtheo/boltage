@@ -7,7 +7,7 @@ export default class BoltForm extends mix([useFormValidation], LightningElement)
   @api record;
   @api records;
   get _record() {
-    return this.record ?? this.records.reduce((records, record) => 
+    return this.record ?? this.records.reduce((records, record) =>
       Object.assign(records, record), {}
     )
   }
@@ -23,19 +23,19 @@ export default class BoltForm extends mix([useFormValidation], LightningElement)
       this.template.addEventListener('boltbind', (e) => {
         const {
           detail: {
-            mode, 
+            mode,
             recordField: [objectApiName, fieldValue]
           }
         } = e;
         const [fieldApiName] = Object.keys(fieldValue);
         if(this.watch.includes(fieldApiName)) {
           e.stopImmediatePropagation();
-          this.dispatchEvent(new CustomEvent(fieldApiName, {
+          this.dispatchEvent(new CustomEvent(fieldApiName.toLowerCase(), {
             detail: {
               value: fieldValue[fieldApiName],
               next: {
                 detail: {
-                  mode, 
+                  mode,
                   recordField: [objectApiName, fieldValue]
                 }
               }

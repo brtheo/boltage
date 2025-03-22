@@ -10,8 +10,18 @@ public with sharing class Bolt_Test {
   public static void testDynamicSOQLWithArrayArgBindings() {
     Test.startTest();
     Bolt.soqlQuery(
-      'SELECT Id FROM Case WHERE Id in :arg0 LIMIT 1', 
-      '{"arg0":"$ARRAY${}"}', 
+      'SELECT Id FROM Case WHERE Id in :arg0 LIMIT 1',
+      '{"arg0":"$ARRAY${}"}',
+      'WITH USER_MODE'
+    );
+    Test.stopTest();
+  }
+  @istest()
+  public static void testDynamicSOQLWithoutSharing() {
+    Test.startTest();
+    Bolt.soqlQueryWithoutSharing(
+      'SELECT Id FROM Case WHERE Id in :arg0 LIMIT 1',
+      '{"arg0":"$ARRAY${}"}',
       'WITH USER_MODE'
     );
     Test.stopTest();
