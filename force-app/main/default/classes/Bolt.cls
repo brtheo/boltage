@@ -1,9 +1,16 @@
 public with sharing class Bolt {
   public final static String STARTS_WITH_ARRAY_TOKEN = '$ARRAY$';
   public static WithoutSharingProvider withoutSharing { get { return new WithoutSharingProvider(); } }
+
   @AuraEnabled(cacheable=true)
-  public static Object[] soqlQuery(String query, String params, String mode) {
-    return soqlQueryWithoutCache(query, params, mode);
+  public static Object soqlQuery(String query, String params, String mode, Boolean onlyFirst) {
+    List<Object> o = soqlQueryWithoutCache(query, params, mode);
+    if(onlyFirst) {
+      return o.size() != 0
+        ? o[0]
+        : null;
+    }
+    return o;
   }
   @AuraEnabled()
   public static Object[] soqlQueryWithoutSharing(String query, String params, String mode) {

@@ -1,9 +1,18 @@
 <template>
   <lightning-record-picker
+    lwc:ref="inputRef"
     onchange={bind}
     label={Label}
+    required={required}
+    disabled={disabled}
     value={initialValue}
     placeholder={placeholder}
     object-api-name={RecordPickerObjectApiName}
+    display-info={displayInfo}
+    field-level-help={fieldLevelHelp}
+    filter={filter}
+    matching-info={matchingInfo}
+    message-when-bad-input={messageWhenBadInput}
+    variant={variant}
   ></lightning-record-picker>
 </template>

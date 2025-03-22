@@ -1,0 +1,1 @@
+export const css = (styles, ...args) => styles.reduce((_styles, curr, i) => `${_styles}${curr}${args?.[i] ?? ''}`,'');

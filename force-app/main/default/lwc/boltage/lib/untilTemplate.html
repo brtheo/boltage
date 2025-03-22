@@ -1,0 +1,8 @@
+<template>
+  <template lwc:if={usingSkeletons}>
+      <c-bolt-skeleton with-labels={skeletonLabels} rows={skeletonRows}></c-bolt-skeleton>
+  </template>
+  <template lwc:else>
+      <lightning-spinner></lightning-spinner>
+  </template>
+</template>

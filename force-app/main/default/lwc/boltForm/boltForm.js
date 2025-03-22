@@ -1,21 +1,32 @@
 import { LightningElement, api } from 'lwc';
-import { mix, useFormValidation } from 'c/bolt';
+import { useFormValidation, setExternalStyles } from 'c/boltage';
 
-export default class BoltForm extends mix([useFormValidation], LightningElement) {
+export default class BoltForm extends useFormValidation(LightningElement) {
 
   @api watch;
   @api record;
   @api records;
+  @api required;
   get _record() {
     return this.record ?? this.records.reduce((records, record) =>
       Object.assign(records, record), {}
     )
   }
   get recordFields () {
-    return Object.values(this._record);
+    return Object.values(this._record)
+      .map(record => ({
+          ...record,
+          isWatched: this.watch.includes(record.fieldApiName)
+      }));
   }
   @api get validity() {
     return this.formValidity;
+  }
+  @api query(el) {
+    return this.template.querySelector(el);
+  }
+  @api getInputRef(objectApiName, fieldApiName) {
+    return this.query(/***/`[field="${objectApiName}.${fieldApiName}"]`);
   }
 
   connectedCallback() {
@@ -44,5 +55,15 @@ export default class BoltForm extends mix([useFormValidation], LightningElement)
         }
       })
     }
+  }
+  #rendered = false;
+  renderedCallback() {
+    if(!this.#rendered) {
+      setExternalStyles.call(this,'.slds-form-element__help {white-space: pre-line}');
+      this.#rendered = true;
+    }
+  }
+  @api clearValidity() {
+
   }
 }

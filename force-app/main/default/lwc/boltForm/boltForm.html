@@ -1,6 +1,9 @@
 <template>
+  <aside style="display:none" lwc:ref="style"></aside>
   <template for:each={recordFields} for:item="record">
-    <c-bolt-input key={record.fieldApiName} lwc:spread={record}></c-bolt-input>
+      <c-bolt-input required={required} key={record.fieldApiName} lwc:spread={record}>
+      </c-bolt-input>
   </template>
   <slot></slot>
+  <slot name="submit"></slot>
 </template>

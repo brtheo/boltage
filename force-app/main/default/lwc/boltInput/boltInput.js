@@ -5,6 +5,18 @@ import radioGroupTemplate from './boltRadioGroup.html';
 import recordPickerTemplate from './boltRecordPicker.html';
 const For = delay => new Promise(() => setTimeout(() => {}, delay));
 
+const OPS_MAP = {
+  gt: (x,y) => x > y,
+  lt: (x,y) => x < y,
+  geq: (x,y) => x >= y,
+  leq: (x,y) => x <= y
+};
+const OPS = Object.keys(OPS_MAP);
+
+const checkOperators = op => OPS.includes(op);
+
+const R = "Symbol(RECURSIVE_DEPENDENCIES)";
+
 /**
  * @typedef {String} ObjectApiName
  * @typedef {{[key:String]:any}} FieldValue
@@ -12,6 +24,7 @@ const For = delay => new Promise(() => setTimeout(() => {}, delay));
  * @prop {'edit' | 'insert'} mode
  * @prop {[ObjectApiName, FieldValue]} recordField
  */
+
 
 export default class BoltInput extends LightningElement {
   /**BOLT PROPS */
@@ -23,11 +36,14 @@ export default class BoltInput extends LightningElement {
   @api value;
   @api objectApiName;
   @api fieldApiName;
+  @api showsWhen;
+  @api controls;
 
   /**OVERRIDABLE SPREADED PROPS */
   @api label;
   @api type;
   @api options;
+  @api isWatched = false;
 
   get RecordPickerObjectApiName() {
     return this.recordPickerObjectApiName !== undefined
@@ -41,11 +57,33 @@ export default class BoltInput extends LightningElement {
     }[this.mode];
   }
   get initialValue() { return this[this.currentValue]; }
+  @api getCurrentValue() { return this.initialValue; }
 
-  connectedCallback() {
-    this.setAttribute('field', this.Name);
-    this.classList.add(this.Name);
+  @api execTrigger(fieldValue) {
+    const [testingKey,testingValue] = Object.entries(fieldValue)?.[0];
+    const [actualKey, actualValue] = Object.entries(this.showsWhen)?.[0];
+    let isEqual;
+    if(testingKey === actualKey) {
+      if(Object.keys(actualValue).some(checkOperators)) {
+        const operator = Object.keys(actualValue).find(checkOperators);
+        const fun = OPS_MAP[operator];
+        isEqual = fun(+testingValue, actualValue[operator]);
+      } else {
+        isEqual = (
+          typeof actualValue === 'number'
+            ? +testingValue
+            : testingValue
+        ) === actualValue;
+      }
+    } else if(testingKey === 'RECURSIVE_DEPENDENCIES') isEqual = false;
+    this.setDynamicVisibility(!isEqual);
+    return isEqual;
   }
+
+  setDynamicVisibility(value) {
+    this.setAttribute('data-hidden', value);
+  }
+
   render() {
     switch(this.Type) {
       case 'reference':
@@ -58,13 +96,38 @@ export default class BoltInput extends LightningElement {
       default: return inputTemplate;
     }
   }
+
+  connectedCallback() {
+    this.setDynamicVisibility(this?.showsWhen instanceof Object);
+    this.setAttribute('field', this.Name);
+    this.classList.add(this.Name);
+  }
+  #hasInit = false;
+  renderedCallback() {
+    if(!this.#hasInit && this.value !== undefined) {
+      if(this.isWatched) {
+        console.log(this.value, 'initial value', this.fieldApiName)
+        const prop = {
+          'reference': 'recordId',
+          'toggle': 'checked',
+        }[this.Type] ?? 'value';
+        this.bind({
+          detail: {[prop]: this.value}
+        });
+      }
+      this.#hasInit = true;
+    }
+  }
+
   bind(e) {
-    this[this.currentValue] = this.Type === 'reference'
-      ? e.detail.recordId
-      : e.detail.value;
+    this[this.currentValue] = {
+      'reference': e.detail.recordId ?? undefined,
+      'toggle': e.detail.checked,
+    }[this.Type] ?? e.detail.value;
     /**@type {BoltBindEventDetail} */
     const detail = {
       mode: this.mode,
+      controls: this.controls,
       recordField: [
         this.objectApiName,
         { [this.fieldApiName]: this[this.currentValue] },
@@ -80,12 +143,34 @@ export default class BoltInput extends LightningElement {
     )
   }
 
+  hasError = false;
+  errors = [];
+
+
   @api blur() {this.refs.inputRef.blur();}
   @api checkValidity() { return this.refs.inputRef.checkValidity();}
   @api focus() {this.refs.inputRef.focus();}
-  @api reportValidity() { return this.refs.inputRef.reportValidity();}
-  @api setCustomValidity(message) {this.refs.inputRef.setCustomValidity(message);}
+  @api clearValidity() {
+    this.refs.inputRef.setCustomValidity('');
+  }
+  @api reportValidity(fromFormValidity = false) {
+    this.hasError = fromFormValidity
+      ? !this.refs.inputRef.reportValidity()
+      : this.errors.length != 0;
+    this.refs.inputRef.classList.toggle('boltHasError', this.hasError)
+    return this.refs.inputRef.reportValidity();
+
+  }
+  @api setCustomValidity(message) {
+    if(message instanceof Array)
+      this.errors = message;
+    else
+      this.refs.inputRef.setCustomValidity(message);
+    return this;
+  }
+
   @api showHelpMessageIfInvalid() {this.refs.inputRef.showHelpMessageIfInvalid();}
+
 
   get Type() {return this.type ?? this.info.type;}
   get Label() {return this.label ?? this.info.label;}
@@ -156,5 +241,8 @@ export default class BoltInput extends LightningElement {
   @api spinnerActive;
 
   /**RECORD PICKER ATTR */
-  @api recordPickerObjectApiName
+  @api recordPickerObjectApiName;
+  @api displayInfo;
+  @api filter;
+  @api matchingInfo;
 }

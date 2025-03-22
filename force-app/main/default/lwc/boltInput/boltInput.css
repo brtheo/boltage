@@ -1,0 +1,15 @@
+:host[data-hidden="true"] {
+  display: none;
+  visibility: hidden;
+}
+ul {
+  list-style-type: disc;
+  color: crimson;
+  font-size: smaller;
+  margin-inline-start: 2rem;
+}
+:host[error] :is(lightning-input, lightning-combobox, lightning-record-picker, lightning-radio-group),
+.boltHasError {
+  --sds-c-input-color-border: crimson;
+  /* --dxp-c-input-width-border */
+}
