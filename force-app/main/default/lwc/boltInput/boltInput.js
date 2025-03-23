@@ -38,6 +38,7 @@ export default class BoltInput extends LightningElement {
   @api fieldApiName;
   @api showsWhen;
   @api controls;
+  @api _dataset;
 
   /**OVERRIDABLE SPREADED PROPS */
   @api label;
@@ -101,6 +102,11 @@ export default class BoltInput extends LightningElement {
     this.setDynamicVisibility(this?.showsWhen instanceof Object);
     this.setAttribute('field', this.Name);
     this.classList.add(this.Name);
+    if(this._dataset) {
+      for(const [key, val] of Object.entries(this._dataset)) {
+        this.setAttribute(`data-${key}`,val);
+      }
+    }
   }
   #hasInit = false;
   renderedCallback() {
