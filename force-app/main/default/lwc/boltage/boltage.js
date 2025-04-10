@@ -39,6 +39,5 @@ export {
   setExternalStyles,
   mix,
   db,
-  query,
   css
 } from './lib/utils/_';

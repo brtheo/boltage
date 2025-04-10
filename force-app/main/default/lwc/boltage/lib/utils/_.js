@@ -1,6 +1,6 @@
 /**PUBLIC*/
 export { mix } from './public/mix';
-export { db, query } from './public/db';
+export { db } from './public/db';
 export { pick } from './public/pick';
 export { interpolate } from './public/interpolate';
 export { setExternalStyles } from './public/setExternalStyles';
