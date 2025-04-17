@@ -46,7 +46,7 @@ public with sharing class Bolt {
       return Database.queryWithBinds(
         query,  
         bindParams,
-        level
+        AccessLevel.USER_MODE
       );
     }
   }
