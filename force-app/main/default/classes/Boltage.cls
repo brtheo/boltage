@@ -13,7 +13,6 @@ public with sharing class Bolt {
   }
   @auraEnabled
   public static Object[] soqlQueryWithoutCache(String query, String params, String mode) {
-    AccessLevel level = mode == 'WITH USER_MODE' ? AccessLevel.USER_MODE : AccessLevel.SYSTEM_MODE;
     Map<String,Object> bindParams = (Map<String,Object>) JSON.deserializeUntyped(params);
     Map<String,Object> currentArrayArg = new Map<String, Object>();
     for(String key : bindParams.keySet()){
@@ -28,7 +27,7 @@ public with sharing class Bolt {
     return Database.queryWithBinds(
       query,
       bindParams,
-      level
+      AccessLevel.USER_MODE
     );
   }
 }
