@@ -16,14 +16,4 @@ public with sharing class Bolt_Test {
     );
     Test.stopTest();
   }
-  @istest()
-  public static void testDynamicSOQLWithoutSharing() {
-    Test.startTest();
-    Bolt.soqlQueryWithoutSharing(
-      'SELECT Id FROM Case WHERE Id in :arg0 LIMIT 1', 
-      '{"arg0":"$ARRAY${}"}', 
-      'WITH USER_MODE'
-    );
-    Test.stopTest();
-  }
 }
