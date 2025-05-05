@@ -12,7 +12,7 @@ export default class BoltForm extends useFormValidation(LightningElement) {
       Object.assign(records, record), {}
     )
   }
-  get recordFields () {
+  get recordFields() {
     return Object.values(this._record)
       .map(record => ({
           ...record,
@@ -27,6 +27,15 @@ export default class BoltForm extends useFormValidation(LightningElement) {
   }
   @api getInputRef(objectApiName, fieldApiName) {
     return this.query(/***/`[field="${objectApiName}.${fieldApiName}"]`);
+  }
+  get numberOfFields() {
+    return this.recordFields.length - 1
+  }
+  handleFormRendered() {
+    console.log('form rendered')
+    this.recordFields.forEach(({objectApiName, fieldApiName}) => 
+      this.query(/***/`[field="${objectApiName}.${fieldApiName}"]`).triggerBinding()
+    )
   }
 
   connectedCallback() {

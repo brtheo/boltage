@@ -25,6 +25,7 @@ function resolveDependencies(controls, objectApiName, target, fieldValue = RECUR
     const fieldRef = this.refs.form.getInputRef(objectApiName,control);
     const isOk = fieldRef.execTrigger(fieldValue);
     const currentValue = fieldRef.getCurrentValue();
+    // console.log('currentValue', currentValue,'isok',isOk, 'contr', control)
     if(fieldRef.controls?.[0]) {
       resolveDependencies.call(this, fieldRef.controls, objectApiName, target)
     }

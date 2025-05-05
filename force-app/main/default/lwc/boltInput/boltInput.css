@@ -1,7 +1,7 @@
-:host[data-hidden="true"] {
+/* :host[data-hidden="true"]{
   display: none;
   visibility: hidden;
-}
+} */
 ul {
   list-style-type: disc;
   color: crimson;

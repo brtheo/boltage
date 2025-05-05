@@ -1,7 +1,13 @@
 <template>
   <aside style="display:none" lwc:ref="style"></aside>
-  <template for:each={recordFields} for:item="record">
-      <c-bolt-input required={required} key={record.fieldApiName} lwc:spread={record}>
+  <template for:each={recordFields} for:item="record" for:index="idx">
+      <c-bolt-input 
+        required={required} 
+        key={record.fieldApiName} 
+        index={idx} 
+        total-fields={numberOfFields}
+        onformrendered={handleFormRendered}      
+        lwc:spread={record}>
       </c-bolt-input>
   </template>
   <slot></slot>

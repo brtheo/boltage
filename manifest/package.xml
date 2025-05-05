@@ -9,8 +9,8 @@
         <name>LightningComponentBundle</name>
     </types>
     <types>
-        <members>Bolt</members>
-        <members>Bolt_Test</members>
+        <members>Boltage</members>
+        <members>Boltage_Test</members>
         <name>ApexCLass</name>
     </types>
     <version>61.0</version>

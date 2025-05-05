@@ -65,11 +65,4 @@
     validity={validity}
     variant={variant}
   ></lightning-input>
-  <template lwc:if={hasError}>
-    <ul>
-      <template for:each={errors} for:item="error" for:index="idx">
-        <li key={error.idx}>{error}</li>
-      </template>
-    </ul>
-  </template>
 </template>

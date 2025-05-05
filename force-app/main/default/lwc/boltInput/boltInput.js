@@ -39,6 +39,8 @@ export default class BoltInput extends LightningElement {
   @api showsWhen;
   @api controls;
   @api _dataset;
+  @api index;
+  @api totalFields;
 
   /**OVERRIDABLE SPREADED PROPS */
   @api label;
@@ -58,7 +60,7 @@ export default class BoltInput extends LightningElement {
     }[this.mode];
   }
   get initialValue() { return this[this.currentValue]; }
-  @api getCurrentValue() { return this.initialValue; }
+  @api getCurrentValue() { return this.initialValue;}
 
   @api execTrigger(fieldValue) {
     const [testingKey,testingValue] = Object.entries(fieldValue)?.[0];
@@ -83,6 +85,7 @@ export default class BoltInput extends LightningElement {
 
   setDynamicVisibility(value) {
     this.setAttribute('data-hidden', value);
+    // this.classList.toggle('hidden-workaround',value)
   }
 
   render() {
@@ -110,9 +113,9 @@ export default class BoltInput extends LightningElement {
   }
   #hasInit = false;
   renderedCallback() {
-    if(!this.#hasInit && this.value !== undefined) {
-      if(this.isWatched) {
-        console.log(this.value, 'initial value', this.fieldApiName)
+    if(!this.#hasInit) {
+      if(this.isWatched && this.value !== undefined) {
+        // console.log(this.value, 'initial value', this.fieldApiName)
         const prop = {
           'reference': 'recordId',
           'toggle': 'checked',
@@ -120,9 +123,27 @@ export default class BoltInput extends LightningElement {
         this.bind({
           detail: {[prop]: this.value}
         });
+      } 
+      if(this.index !== undefined && this.index === this.totalFields) {
+        this.dispatchEvent(
+          new CustomEvent('formrendered', {
+            bubbles: true, composed: true,
+            detail: true
+          })
+        )
       }
       this.#hasInit = true;
     }
+  }
+
+  @api triggerBinding() {
+    const prop = {
+      'reference': 'recordId',
+      'toggle': 'checked',
+    }[this.Type] ?? 'value';
+    this.bind({
+      detail: {[prop]: this[this.currentValue]}
+    });
   }
 
   bind(e) {
@@ -130,6 +151,7 @@ export default class BoltInput extends LightningElement {
       'reference': e.detail.recordId ?? undefined,
       'toggle': e.detail.checked,
     }[this.Type] ?? e.detail.value;
+    // console.log(this[this.currentValue], 'actual current value')
     /**@type {BoltBindEventDetail} */
     const detail = {
       mode: this.mode,

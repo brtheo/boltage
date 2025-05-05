@@ -1,5 +1,5 @@
-import soqlQuery from '@salesforce/apex/Bolt.soqlQuery';
-import soqlQueryWithoutCache from "@salesforce/apex/Bolt.soqlQueryWithoutCache";
+import soqlQuery from '@salesforce/apex/Boltage.soqlQuery';
+import soqlQueryWithoutCache from "@salesforce/apex/Boltage.soqlQueryWithoutCache";
 
 const USER_MODE = 'WITH USER_MODE';
 const UNCACHED = 'UNCACHED';

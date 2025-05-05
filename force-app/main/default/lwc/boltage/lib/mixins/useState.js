@@ -21,29 +21,32 @@ function getInitialState(states) {
  * @param {Object.<string, boolean> | Object.<string, Object.<string, boolean>>} states
  * @returns {Constructor<any>}
  */
-export const useState = ({states}) => clazz => {
-  const _clazz = class extends clazz {
-    @track STATE = getInitialState(states)
+export const useState = (states) => {
+  console.log(JSON.stringify(states),'hello mf')
+  return clazz => {
+    const _clazz = class extends clazz {
+      @track STATE = getInitialState(states)
+    }
+    if(states instanceof Array) {
+      states.forEach(state_ => {
+        const [stateName, states] = Object.entries(state_).at(0)
+        Object.defineProperties(_clazz.prototype, Object.fromEntries(
+          Object.keys(states).map(state => [
+            state, {
+              get() { return this.STATE[stateName] === state; },
+              set(toBeSet) { this.STATE[stateName] = toBeSet ? state : undefined; }
+            }
+          ])
+        ))
+      })
+    } else {
+      Object.defineProperties(clazz.prototype, Object.fromEntries(Object.keys(states).map(state => [
+        state, {
+          get() { return this.STATE === state; },
+          set(toBeSet) { this.STATE = toBeSet ? state : undefined; }
+        }
+      ])))
+    }
+    return _clazz
   }
-  if(states instanceof Array) {
-    states.forEach(state_ => {
-      const [stateName, states] = Object.entries(state_).at(0)
-      Object.defineProperties(_clazz.prototype, Object.fromEntries(
-        Object.keys(states).map(state => [
-          state, {
-            get() { return this.STATE[stateName] === state; },
-            set(toBeSet) { this.STATE[stateName] = toBeSet ? state : undefined; }
-          }
-        ])
-      ))
-    })
-  } else {
-    Object.defineProperties(clazz.prototype, Object.fromEntries(Object.keys(states).map(state => [
-      state, {
-        get() { return this.STATE === state; },
-        set(toBeSet) { this.STATE = toBeSet ? state : undefined; }
-      }
-    ])))
-  }
-  return _clazz
 }
