@@ -199,7 +199,11 @@ export default class BoltInput extends LightningElement {
 
   @api showHelpMessageIfInvalid() {this.refs.inputRef.showHelpMessageIfInvalid();}
 
-
+  get Checked() {
+    if(this.checked !== undefined) return this.checked;
+    return this.mode === 'edit' ? this.value : this.ref
+  }
+  
   get Type() {return this.type ?? this.info.type;}
   get Label() {return this.label ?? this.info.label;}
   get Options() {return this.options ?? this.info.options;}
