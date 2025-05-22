@@ -29,9 +29,9 @@ export const useListView = ({listViewApiName, objectApiName, recordsPerPage, opt
   @track actualFirstRowId;
   @track currentFirstRowId;
   @track previousFirstRowId;
-  @track LOADING_NEW_PAGE;
-  get loading() {
-    return this.LOADING_NEW_PAGE ?? false
+  @track __LOADING_NEW_PAGE__;
+  get LOADING_NEW_PAGE() {
+    return this.__LOADING_NEW_PAGE__ ?? false
   }
 
   @wire(getListInfoByName, { objectApiName, listViewApiName })
@@ -90,7 +90,7 @@ export const useListView = ({listViewApiName, objectApiName, recordsPerPage, opt
   }
   get PageToken() { return this.pageToken; }
   set PageToken(v) {
-    this.LOADING_NEW_PAGE = true;
+    this.__LOADING_NEW_PAGE__ = true;
     this.pageToken = v;
   }
   get FirstPage() { return this.PreviousPageToken === undefined };
@@ -102,7 +102,7 @@ export const useListView = ({listViewApiName, objectApiName, recordsPerPage, opt
     if(v === this.actualFirstRowId) 
       this.currentFirstRowId = v;
     if(this.previousFirstRowId && this.actualFirstRowId !== this.previousFirstRowId) 
-      this.LOADING_NEW_PAGE = false
+      this.__LOADING_NEW_PAGE__ = false
   }
   get ListViewLabel() { return this.__LIST_MXN_INFO_WIRED_RESULTS__?.data?.label; }
 
@@ -120,15 +120,12 @@ export const useListView = ({listViewApiName, objectApiName, recordsPerPage, opt
             fieldApiName, displayValue === null ? value : displayValue
           ])
         )
-      )
-      // .sort(this.sortBy(this.sortedBy, this.sortDirection === 'asc' ? 1 : -1)) ?? undefined;
+    )
     if(ready) {
        this.actualFirstRowId = data?.[0]?.Id;
        this.PreviousFirstRowId = data?.[0]?.Id;
     }
-    return ready
-      ? data
-      : []
+    return ready ? data : []
   }
   get ListViewColumns() {
     const SOBJECT_INFO = this?.[`${sanitizeApiName(objectApiName)}info`];
@@ -137,7 +134,7 @@ export const useListView = ({listViewApiName, objectApiName, recordsPerPage, opt
 
     return SOBJECT_INFO !== undefined 
       ? this.ListViewFields?.map(({fieldApiName}) => {
-        if(this.TURFU_MODE && this.loading) {
+        if(this.TURFU_MODE && this.LOADING_NEW_PAGE) {
           return {
             type: 'loadingState',
             fieldName: fieldApiName,
@@ -170,15 +167,5 @@ export const useListView = ({listViewApiName, objectApiName, recordsPerPage, opt
   handleSort ({detail: {fieldName, sortDirection}}) {
     this.sortDirection = sortDirection;
     this.sortedBy = fieldName;
-  }
-  sortBy (field, direction, primer) {
-    const key = primer
-        ? x => primer(x[field]) 
-        : x => x[field]; 
-    return (a, b) => {
-        a = key(a);
-        b = key(b);
-        return direction * ((a > b) - (b > a));
-    };
   }
 }
