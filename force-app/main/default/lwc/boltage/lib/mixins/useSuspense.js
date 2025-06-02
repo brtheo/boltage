@@ -7,6 +7,7 @@ const maybeSuspendedMixins = [
   '__RECORD_FIELDS_MXN_DONE__',
   '__RELATED_RECORDS_MXN_DONE__',
   '__FORM_MXN_DONE__',
+  '__LIST_MXN_DONE__',
 ];
 
 /**

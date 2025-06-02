@@ -11,3 +11,4 @@ export { useSObjects } from './useSObjects';
 export { useState } from './useState';
 export { useStyles } from './useStyles';
 export { useSuspense } from './useSuspense';
+export { useListView } from './useListView';

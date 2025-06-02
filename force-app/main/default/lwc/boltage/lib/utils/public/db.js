@@ -1,28 +1,12 @@
 import soqlQuery from '@salesforce/apex/Boltage.soqlQuery';
 import soqlQueryWithoutCache from "@salesforce/apex/Boltage.soqlQueryWithoutCache";
+// import soqlQueryWithoutSharing from "@salesforce/apex/Bolt.soqlQueryWithoutSharing";
 
 const USER_MODE = 'WITH USER_MODE';
 const UNCACHED = 'UNCACHED';
+const WITHOUT_SHARING = 'WITHOUT_SHARING';
 const LIMIT_ONE = 'LIMIT 1';
 const ARRAY_TOKEN = '$ARRAY$'
-class Token {
-  static WHERE = 'WHERE';
-  static IN = 'IN';
-  static LIKE = 'LIKE';
-  static AND = 'AND';
-  static LIMIT = 'LIMIT';
-  static OFFSET = 'OFFSET';
-  static SELECT = 'SELECT';
-  static FROM = 'FROM';
-  currentToken;
-  constructor(token) {
-    this.currentToken = token;
-  }
-  is(token) {
-    return this.currentToken.includes(token);
-  }
-}
-
 /**
   * @param {string[]} req
   * @param {any[]} args
@@ -33,24 +17,24 @@ export const db = async (req, ...args ) => {
   let query = req.reduce((acc, curr, i) => {
   if(args[i] !== undefined) {
     const argName = `arg${i}`;
-    const token = new Token(curr.toUpperCase());
+    const _curr = curr.toLowerCase()
     switch(true) {
       case typeof args[i] === 'function':
         return `${acc}${curr}${args[i]()}`
-      case token.is(Token.IN) && args[i] instanceof Array:
+      case _curr.includes('in') && args[i] instanceof Array:
         params[argName] = ARRAY_TOKEN + JSON.stringify(args[i].reduce((obj, curr) => ({...obj, [curr]:''}), {}));
         return `${acc}${curr}:${argName}`;
-      case token.is(Token.WHERE):
-      case token.is(Token.AND):
-      case token.is(Token.LIKE):
-      case token.is(Token.OFFSET):
-      case token.is(Token.LIMIT):
+      case _curr.includes('where'):
+      case _curr.includes('and'):
+      case _curr.includes('offset'):
+      case _curr.includes('limit'):
+      case _curr.includes('like'):
         params[argName] = args[i]
         return `${acc}${curr}:${argName}`;
-      case token.is(Token.SELECT) && args[i] instanceof Array:
+      case _curr.includes('select') && args[i] instanceof Array:
         return `${acc}${curr}${args[i].join(',')}`;
-      case token.is(Token.FROM):
-      case token.is(Token.SELECT):
+      case _curr.includes('from'):
+      case _curr.includes('select'):
         return `${acc}${curr}${args[i]}`;
       default: return '';
     }
@@ -65,10 +49,18 @@ export const db = async (req, ...args ) => {
     query = query.replace(UNCACHED, '');
     return soqlQueryWithoutCache({query, params: JSON.stringify(params), mode});
   }
+  // else if(query.includes(WITHOUT_SHARING)){
+  //   query = query.replace(WITHOUT_SHARING, '');
+  //   return soqlQueryWithoutSharing({query, params: JSON.stringify(params), mode});
+  // }
   if(query.includes(LIMIT_ONE)) {
     query = query.replace(LIMIT_ONE, '');
     return soqlQuery({query, params: JSON.stringify(params), mode, onlyFirst: true})
   }
 
-  return soqlQuery({query, params: JSON.stringify(params), mode});
+  return soqlQuery({query, params: JSON.stringify(params), mode, onlyFirst: false});
+}
+
+export const query = (req, ...args) => {
+  return 'ELECT Id FROM Case WHERE Name = {{hello}} LIMIT 1'
 }

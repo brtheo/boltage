@@ -120,7 +120,8 @@ export const useListView = ({listViewApiName, objectApiName, recordsPerPage, opt
             fieldApiName, displayValue === null ? value : displayValue
           ])
         )
-    )
+      )
+      // .sort(this.sortBy(this.sortedBy, this.sortDirection === 'asc' ? 1 : -1)) ?? undefined;
     if(ready) {
        this.actualFirstRowId = data?.[0]?.Id;
        this.PreviousFirstRowId = data?.[0]?.Id;

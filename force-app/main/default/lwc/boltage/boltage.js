@@ -23,7 +23,8 @@ export {
   useSObjects,
   useState,
   useStyles,
-  useSuspense
+  useSuspense,
+  useListView
 } from './lib/mixins/_';
 
 export {
@@ -39,5 +40,6 @@ export {
   setExternalStyles,
   mix,
   db,
+  query,
   css
 } from './lib/utils/_';

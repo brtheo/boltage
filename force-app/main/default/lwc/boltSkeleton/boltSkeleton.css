@@ -7,6 +7,7 @@
   --_skeletonHeight: var(--skeletonHeight, 40px);
   --_skeletonRows: var(--skeletonRows, auto);
   --_skeletonCols: var(--skeletonCols, repeat(2, 1fr));
+  --_skeletonSpeed: var(--skeletonSpeed, 2000ms);
   --_skeletonRadius: var(--skeletonRadius, var(--slds-c-input-radius-border, 
     var(--sds-c-input-radius-border, 
       var(
@@ -19,7 +20,7 @@
   width: var(--_skeletonWidth);
   grid-template-columns: var(--_skeletonCols);
   grid-auto-rows: var(--_skeletonRows);
-  gap: .5rem;
+  gap: var(--skeletonGap, .5rem);
   margin-block: .2rem;
 }
 aside {
@@ -40,7 +41,7 @@ aside {
   );
   background-size: 200% 100%;
   background-position: 100% 0; 
-  animation: 2000ms linear infinite skeleton;
+  animation: var(--_skeletonSpeed) linear infinite skeleton;
 }
 .row.label {
   height: calc(var(--_skeletonHeight) / 2);

@@ -20,6 +20,7 @@ import { setExternalStyles } from "../utils/_";
 export const useStyles = styles => clazz =>
   class extends clazz {
     __SET_EXTERNAL_STYLES__() {
+      console.log('set styles called')
         setExternalStyles.call(this, styles);
     }
   }
