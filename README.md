@@ -19,6 +19,7 @@ and this project (kinda 🤏) adheres to [Semantic Versioning](https://semver.or
 ### Breaking changes
 
 - new way of implementing mixins
+
 old:
 ```javascript
 export default class myLWC extends mix(
@@ -30,7 +31,7 @@ new:
 ```javascript
 export default class myLWC extends mix(
   BoltElement
-  (useRecordFields({ fields })
+  useRecordFields({ fields })
 )
 ```
 
