@@ -4,7 +4,6 @@ import {
   trace,
   deepenedObject,
   createFieldsByObjectApiName,
-  sanitizeApiNameCamelCase,
   boolPropsReducer
 } from '../utils/_';
 
@@ -38,9 +37,6 @@ const MXN_NAME = 'useRecordsFields';
 export const useRecordsFields = ({fields}) => clazz => {
   const fieldsByObjectApiName = createFieldsByObjectApiName(fields);
   const objectApiNames = Object.keys(fieldsByObjectApiName);
-  // const recordIds = Object.fromEntries(
-  //   objectApiNames.map(name => [name, `${sanitizeApiNameCamelCase(name)}Id`])
-  // );
   const _clazz = class extends clazz {
     @track __RECORDS_FIELDS_MXN_VALUES__ = {};
     @track __RECORDS_FIELDS_MXN_INDEX_QUEUED__ = Array.from(Object.keys(objectApiNames), (_,i) => i);
