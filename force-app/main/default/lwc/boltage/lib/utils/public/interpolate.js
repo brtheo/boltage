@@ -1,4 +1,4 @@
-import { pick } from "../pick.js";
+import { pick } from "./pick.js";
 /**
  * Useful method to pass as an input a custom label formated as an ES6 template literal
  * like this : Hello ${name}
