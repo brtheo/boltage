@@ -17,7 +17,7 @@ and this project (kinda 🤏) adheres to [Semantic Versioning](https://semver.or
 ## [2.0.2] - 2025-06-16
 
 ### Corrected
-- Corrected imports and exportd
+- Corrected imports and exports
 
 ## [2.0.1] - 2025-06-13
 
