@@ -18,7 +18,12 @@ export const usePoller = ({resolveCondition, wiredMethod, maxIteration, interval
       this.__POLLER_MXN_INTERVAL__ = window.setInterval(() => {
         this.POLLER_ITTERATION ++;
         this.POLLER_PROGRESS += Math.round(100 / _maxIteration);
-
+        
+        refreshApex(this?.[wiredMethod]);
+        
+        if(this.POLLER_ITTERATION === _maxIteration)
+          this.pollingHasEnded('POLLING_LIMIT_EXCEEDED');
+        
         if(this?.[wiredMethod]?.error)
           this.pollingHasEnded('ERR');
 
@@ -39,11 +44,6 @@ export const usePoller = ({resolveCondition, wiredMethod, maxIteration, interval
               this.pollingHasEnded('OK');
             break;
         }
-
-        if(this.POLLER_ITTERATION === _maxIteration)
-          this.pollingHasEnded('POLLING_LIMIT_EXCEEDED');
-
-        refreshApex(this?.[wiredMethod]);
       }, _interval);
     }
     pollingHasEnded(status) {
